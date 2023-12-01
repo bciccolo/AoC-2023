@@ -1,61 +1,41 @@
-DATA_FILE = 'day1.txt'
-
 DIGIT_NAMES = [ 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
-def convert_words_to_digits(text):
-    updated = ''
+def find_first_digit(text, consider_names):
     i = 0
     while i < len(text):
-        found = False
-        for index, name in enumerate(DIGIT_NAMES):
-            if text[i:i + len(name)] == name:
-                updated += str(index)
-                i += len(name)
-                found = True
-                break
+        if text[i].isdigit():
+            return int(text[i])
 
-        if not found:
-            updated += text[i]
-            i += 1
+        if consider_names:
+            for index, name in enumerate(DIGIT_NAMES):
+                if text[i:i + len(name)] == name:
+                    return index
 
-    return updated
+        i += 1
 
 
-def find_number(line):
-    digits = [int(c) for c in [*line] if c.isdigit()]
-    length = len(digits)
-    if length > 1:
-        return digits[0] * 10 + digits[length - 1]
-    return digits[0] * 10 + digits[0]
+def find_last_digit(text, consider_names):
+    i = len(text) - 1
+    while i >= 0:
+        if text[i].isdigit():
+            return int(text[i])
+
+        if consider_names:
+            for index, name in enumerate(DIGIT_NAMES):
+                if text[i - len(name):i] == name:
+                    return index
+
+        i -= 1
 
 
-def part1():
-    file = open(DATA_FILE, 'r')
-    lines = file.readlines()
+file = open('day1.txt', 'r')
+lines = file.readlines()
 
-    total = 0
-    for line in lines:
-        total += find_number(line.strip())
+total_part_1 = 0
+total_part_2 = 0
+for line in lines:
+    total_part_1 += find_first_digit(line, False) * 10 + find_last_digit(line, False)
+    total_part_2 += find_first_digit(line, True) * 10 + find_last_digit(line, True)
 
-    print(' Part 1: '  + str(total))
-
-
-def part2():
-    file = open(DATA_FILE, 'r')
-    lines = file.readlines()
-
-    total = 0
-    for line in lines:
-        original = line.strip()
-        line = convert_words_to_digits(line.strip())
-        # print(original + " --> " + line + ' : '  + str(find_number(line)))
-        total += find_number(line)
-
-    print(' Part 2: '  + str(total))
-
-
-part1()
-part2() #54100 - too high
-
-# print(convert_words_to_digits('twongdsevenfivefive3foureightwonn'))
-# print(convert_words_to_digits('threesevenseventwoqrcvpvvrdljfone3'))
+print('Part 1: '  + str(total_part_1))
+print('Part 2: '  + str(total_part_2))
