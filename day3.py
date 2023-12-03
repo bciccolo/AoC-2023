@@ -35,10 +35,6 @@ def get_parts_on_line(row, parts, grid):
 
         if contains_symbol(string):
             total += int(part)
-        # else:
-        #     print('>>>>>>>>>>>>>>>>>> part ' + part + ' on line ' + str(row + 1) + ' is BAD - search string: ' + string)
-        #     print('   START: ' + str(start))
-        #     print('   END:   ' + str(end))
 
     return total
 
