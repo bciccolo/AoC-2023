@@ -28,7 +28,7 @@ def find_last_digit(text, consider_names):
         i -= 1
 
 
-file = open('day1.txt', 'r')
+file = open('day1.dat', 'r')
 lines = file.readlines()
 
 total_part_1 = 0

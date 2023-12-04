@@ -106,7 +106,7 @@ def get_parts_on_line(row, parts, grid):
     return total
 
 
-file = open('day3.txt', 'r')
+file = open('day3.dat', 'r')
 lines = file.readlines()
 
 part_numbers = []

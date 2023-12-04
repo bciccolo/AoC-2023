@@ -37,7 +37,7 @@ def check_games(game_results):
     return True
 
 
-file = open('day2.txt', 'r')
+file = open('day2.dat', 'r')
 lines = file.readlines()
 
 count = 1

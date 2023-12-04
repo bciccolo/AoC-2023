@@ -1,4 +1,4 @@
-file = open('day4.txt', 'r')
+file = open('day4.dat', 'r')
 lines = file.readlines()
 
 sum_part_1 = 0
