@@ -7,6 +7,16 @@ light_to_temperature = []
 temperature_to_humidity = []
 humidity_to_location = []
 
+def convert_destination_to_source(value, lookup_map):
+    for entry in lookup_map:
+        dest, source, range = entry
+
+        if value >= dest and value < dest + range:
+            return value + (source - dest)
+
+    return value
+
+
 def convert_source_to_destination(value, lookup_map):
     for entry in lookup_map:
         dest, source, range = entry
@@ -30,8 +40,12 @@ def expand_seeds(seeds):
 
 
 def find_min_location(seeds):
+    count = 0
     min_location = -1
     for seed in seeds:
+        count += 1
+        if count % 1_000_000 == 0:
+            print(count)
         soil = convert_source_to_destination(seed, seed_to_soil)
         fertilizer = convert_source_to_destination(soil, soil_to_fertilizer)
         water = convert_source_to_destination(fertilizer, fertilizer_to_water)
@@ -52,6 +66,43 @@ def find_min_location(seeds):
         #       'location ' + str(location))
 
     return min_location
+
+
+# Strategy: Start with the lowest possible location and work backwards through
+# the lookup maps to get a seed number. Then see if that seed number falls within
+# one of the ranges. Add one to the location and repeat until we get a valid seed
+# number.
+def find_min_location_part_2():
+    location = 0
+
+    seed = 0
+    while True:
+        humidity = convert_destination_to_source(location, humidity_to_location)
+        temperature = convert_destination_to_source(humidity, temperature_to_humidity)
+        light = convert_destination_to_source(temperature, light_to_temperature)
+        water = convert_destination_to_source(light, water_to_light)
+        fertilizer = convert_destination_to_source(water, fertilizer_to_water)
+        soil = convert_destination_to_source(fertilizer, soil_to_fertilizer)
+        seed = convert_destination_to_source(soil, seed_to_soil)
+
+        # print('Seed ' + str(seed) + ', ' +
+        #     'soil ' + str(soil) + ', ' +
+        #     'fertilizer ' + str(fertilizer) + ', ' +
+        #     'water ' + str(water) + ', ' +
+        #     'light ' + str(light) + ', ' +
+        #     'temperature ' + str(temperature) + ', ' +
+        #     'humidity ' + str(humidity) + ', ' +
+        #     'location ' + str(location))
+
+        for i in range(0, len(seeds), 2):
+            start = seeds[i]
+            length = seeds[i + 1]
+            if seed >= start and seed < (start + length):
+                return location
+
+        location += 1
+
+    return location
 
 
 def load_data(file):
@@ -93,7 +144,7 @@ def load_data(file):
             elif blank_counter == 7:
                 humidity_to_location.append(range)
 
-load_data('day5-snippet.dat')
+load_data('day5.dat')
 # print(seeds)
 # print(seed_to_soil)
 # print(soil_to_fertilizer)
@@ -104,4 +155,10 @@ load_data('day5-snippet.dat')
 # print(humidity_to_location)
 
 print('Part 1: ' + str(find_min_location(seeds)))
-print('Part 2: ' + str(find_min_location(expand_seeds(seeds))))
+
+# This "expansion" approach works for the snippet data only, not for the full input.
+# This is because there are several billion seeds to try and the Python process is
+# killed by the OS (memory usage shot up to 30+ GB).
+# print('Part 2: ' + str(find_min_location(expand_seeds(seeds))))
+
+print('Part 2: ' + str(find_min_location_part_2()))
