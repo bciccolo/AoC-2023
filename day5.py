@@ -44,8 +44,6 @@ def find_min_location(seeds):
     min_location = -1
     for seed in seeds:
         count += 1
-        if count % 1_000_000 == 0:
-            print(count)
         soil = convert_source_to_destination(seed, seed_to_soil)
         fertilizer = convert_source_to_destination(soil, soil_to_fertilizer)
         water = convert_source_to_destination(fertilizer, fertilizer_to_water)
