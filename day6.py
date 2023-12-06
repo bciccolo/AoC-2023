@@ -28,4 +28,23 @@ print('Part 1: ' + str(count_winning_options(times, distances)))
 # Part 2
 times = [int(lines[0].split(':')[1].replace(' ', ''))]
 distances = [int(lines[1].split(':')[1].replace(' ', ''))]
-print('Part 2: ' + str(count_winning_options(times, distances)))
+# print('Part 2: ' + str(count_winning_options(times, distances)))
+
+"""
+time = 56717999
+distance = 334113513502430
+(time - x) * x > distance, where 0 <= x <= time
+
+0 = - x^2 + tx - d
+"""
+import math
+
+a = -1
+b = 56717999            # Fill in time number from user input
+c = -334113513502430    # Fill in distance number from user input
+
+discriminant = math.sqrt(b ** 2 - 4 * a * c)
+upper = math.floor((-b - discriminant) / (2 * a))
+lower = math.ceil((-b + discriminant) / (2 * a))
+
+print('Part 2: ' + str(upper - lower + 1))
