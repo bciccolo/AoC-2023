@@ -53,36 +53,38 @@ def load_hands(file_name):
             else:
                 matches[card] = 1
 
+        # Boost the best count if we're using jokers
+        boost = 0
+        if jokers:
+            for match, count in matches.items():
+                if match == 'J':
+                    boost = count
+                    break
+
+            if boost > 0:
+                matches.pop('J')
+                # It's possible the hand was all jokers ('JJJJJ')
+                if len(matches) == 0:
+                    matches['A'] = 0
+
+        values = list(matches.values())
+        values.sort(reverse=True)
+
+        values[0] += boost
+
         value = HIGH_CARD
-        if len(matches) == 1:
+        if values[0] == 5:
             value = FIVE_OF_KIND
-        elif len(matches) < 5:
-            # Boost the best count if we're using jokers
-            boost = 0
-            if jokers:
-                for match, count in matches.items():
-                    if match == 'J':
-                        boost = count
-                        break
-
-                if boost > 0:
-                    matches.pop('J')
-
-            values = list(matches.values())
-            values.sort(reverse=True)
-
-            values[0] += boost
-
-            if values[0] == 4:
-                value = FOUR_OF_KIND
-            elif values[0] == 3 and values[1] == 2:
-                value = FULL_HOUSE
-            elif values[0] == 3:
-                value = THREE_OF_KIND
-            elif values[0] == 2 and values[1] == 2:
-                value = TWO_PAIR
-            elif values[0] == 2:
-                value = ONE_PAIR
+        elif values[0] == 4:
+            value = FOUR_OF_KIND
+        elif values[0] == 3 and values[1] == 2:
+            value = FULL_HOUSE
+        elif values[0] == 3:
+            value = THREE_OF_KIND
+        elif values[0] == 2 and values[1] == 2:
+            value = TWO_PAIR
+        elif values[0] == 2:
+            value = ONE_PAIR
 
         hand = {
             'cards': cards,
