@@ -44,7 +44,7 @@ b = 56717999            # Fill in time number from user input
 c = -334113513502430    # Fill in distance number from user input
 
 discriminant = math.sqrt(b ** 2 - 4 * a * c)
-upper = math.floor((-b - discriminant) / (2 * a))
-lower = math.ceil((-b + discriminant) / (2 * a))
+root_1 = int((-b - discriminant) / (2 * a))
+root_2 = int((-b + discriminant) / (2 * a))
 
-print('Part 2: ' + str(upper - lower + 1))
+print('Part 2: ' + str(abs(root_1 - root_2)))
