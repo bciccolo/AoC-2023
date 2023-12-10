@@ -25,7 +25,7 @@ def load_maze(filename):
             maze[row].append(char)
 
     # pprint(maze)
-    print(start)
+    # print(start)
 
 
 def load_waypoints():
@@ -53,57 +53,49 @@ def load_waypoints():
 def move_along_path(waypoint):
     x = waypoint['point'][X]
     y = waypoint['point'][Y]
+    entry = waypoint['entry']
+
     pipe = maze[y][x]
     if pipe == '|':
         if waypoint['entry'] == UP:
-            waypoint['point'][Y] = y + 1
-            return
+            y += 1
         else:
-            waypoint['point'][Y] = y - 1
-            return
-    if pipe == '-':
+            y -= 1
+    elif pipe == '-':
         if waypoint['entry'] == LEFT:
-            waypoint['point'][X] = x + 1
-            return
+            x += 1
         else:
-            waypoint['point'][X] = x - 1
-            return
-    if pipe == '7':
+            x -= 1
+    elif pipe == '7':
         if waypoint['entry'] == LEFT:
-            waypoint['point'][Y] = y + 1
-            waypoint['entry'] = UP
-            return
+            y += 1
+            entry = UP
         else:
-            waypoint['point'][X] = x - 1
-            waypoint['entry'] = RIGHT
-            return
-    if pipe == 'F':
+            x -= 1
+            entry = RIGHT
+    elif pipe == 'F':
         if waypoint['entry'] == RIGHT:
-            waypoint['point'][Y] = y + 1
-            waypoint['entry'] = UP
-            return
+            y += 1
+            entry = UP
         else:
-            waypoint['point'][X] = x + 1
-            waypoint['entry'] = LEFT
-            return
-    if pipe == 'J':
+            x += 1
+            entry = LEFT
+    elif pipe == 'J':
         if waypoint['entry'] == LEFT:
-            waypoint['point'][Y] = y - 1
-            waypoint['entry'] = DOWN
-            return
+            y -= 1
+            entry = DOWN
         else:
-            waypoint['point'][X] = x - 1
-            waypoint['entry'] = RIGHT
-            return
-    if pipe == 'L':
+            x -= 1
+            entry = RIGHT
+    elif pipe == 'L':
         if waypoint['entry'] == RIGHT:
-            waypoint['point'][Y] = y - 1
-            waypoint['entry'] = DOWN
-            return
+            y -= 1
+            entry = DOWN
         else:
-            waypoint['point'][X] = x + 1
-            waypoint['entry'] = LEFT
-            return
+            x += 1
+            entry = LEFT
+
+    return {'point': [y, x], 'entry': entry}
 
 
 def move_down(point):
@@ -135,12 +127,11 @@ waypoint_1, waypoint_2 = load_waypoints()
 
 steps = 1
 # print(steps)
-pprint(waypoint_1)
-pprint(waypoint_2)
+# pprint(waypoint_1)
+# pprint(waypoint_2)
 while not waypoint_1['point'] == waypoint_2['point']:
-# for i in range(8):
-    move_along_path(waypoint_1)
-    move_along_path(waypoint_2)
+    waypoint_1 = move_along_path(waypoint_1)
+    waypoint_2 = move_along_path(waypoint_2)
     steps += 1
     # print(steps)
     # pprint(waypoint_1)
