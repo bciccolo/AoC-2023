@@ -16,7 +16,23 @@ def find_galaxies(universe):
 
 
 def get_distance(point_1, point_2):
-    return abs(point_1[X] - point_2[X]) + abs(point_1[Y] - point_2[Y])
+    distance = abs(point_1[X] - point_2[X]) + abs(point_1[Y] - point_2[Y])
+
+    # Check expansion rows
+    min_y = min(point_1[Y], point_2[Y])
+    max_y = max(point_1[Y], point_2[Y])
+    for row in expansion_rows:
+        if row > min_y and row < max_y:
+            distance += 1_000_000 - 1
+
+    # Check expansion columns
+    min_x = min(point_1[X], point_2[X])
+    max_x = max(point_1[X], point_2[X])
+    for col in expansion_columns:
+        if col > min_x and col < max_x:
+            distance += 1_000_000 - 1
+
+    return distance
 
 
 def load_universe(file_name):
@@ -29,22 +45,27 @@ def load_universe(file_name):
 
         # Expand rows (easy)
         if line.count('#') == 0:
-            universe.append(list(line))
+            # universe.append(list(line))
+            expansion_rows.append(count)
 
         universe.append(list(line))
 
         count += 1
 
     # Expand columns (not so easy)
-    i = 0
-    while i < len(universe[0]):
+    for i in range(len(universe[0])):
         column = [row[i] for row in universe]
         if column.count('#') == 0:
-            for row in universe:
-                row.insert(i, '.')
-            i += 1
+            expansion_columns.append(i)
+    # i = 0
+    # while i < len(universe[0]):
+    #     column = [row[i] for row in universe]
+    #     if column.count('#') == 0:
+    #         for row in universe:
+    #             row.insert(i, '.')
+    #         i += 1
 
-        i += 1
+    #     i += 1
 
     return universe
 
