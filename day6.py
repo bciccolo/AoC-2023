@@ -17,7 +17,7 @@ def count_winning_options(times, distances):
     return winning_options
 
 
-file = open('day6-snippet.dat', 'r')
+file = open('day6.dat', 'r')
 lines = [line.strip() for line in file.readlines()]
 
 # Part 1
