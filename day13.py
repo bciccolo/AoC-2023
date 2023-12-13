@@ -40,7 +40,7 @@ def process_pattern(pattern):
                 count +=1
                 total += i + 1
 
-    # This case never printed anything...
+    # This case never occurs (the instructions were ambiguous about whether this could happen or not)
     if count > 1:
         print("\n".join(pattern))
 
