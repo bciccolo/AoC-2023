@@ -13,9 +13,8 @@ def shift_north():
     #     print(''.join(row))
 
     for col in range(len(grid[0])):
-        row = 0
-        while row < len(grid):
-            # If there's an open spot, slide rocks down
+        for row in range(len(grid)):
+            # If there's an open spot, slide the next rock down
             if grid[row][col] == '.':
                 next = row + 1
                 while next < len(grid):
@@ -26,8 +25,6 @@ def shift_north():
                     elif grid[next][col] == '#':
                         break
                     next += 1
-
-            row += 1
 
     # print('************ POST SHIFT: ')
     # for row in grid:
