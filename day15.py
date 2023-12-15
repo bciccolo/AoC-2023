@@ -17,11 +17,7 @@ def calculate_hash(text):
     return sum
 
 
-part_1 = 0
-
 file = open('day15.dat', 'r')
-for line in file.readlines():
-    line = line.strip()
-    part_1 = calculate_hash(line)
+line = file.readlines()[0].strip()
 
-print('Part 1: ' + str(part_1))
+print('Part 1: ' + str(calculate_hash(line)))
