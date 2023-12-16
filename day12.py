@@ -1,216 +1,16 @@
-import re
-
-def count_arrangements(pattern, groups):
-    count = 0
-
-    # print()
-    # print('Groups: ' + str(groups))
-
-    # print('Original pattern: ' + pattern)
-    # print('Original range: ' + str(2 ** pattern.count('?')))
-
-    # pattern = pre_process(pattern, groups)
-    # print('Reduced pattern: ' + pattern)
-
-    total_springs = sum(groups)
-    total_hashes = pattern.count('#')
-    total_questions = pattern.count('?')
-
-    # print(pattern + ': ' + str(groups))
-    # print('Total springs: ' + str(total_springs))
-    # print('Total spots: ' + str(total_questions))
-
-    # print('Reduced range: ' + str(2 ** total_questions))
-
-    for i in range(2 ** total_questions):
-        bits = bin(i)[2:].zfill(total_questions)
-        if bits.count('1') + total_hashes == total_springs:
-            # print(bits)
-            test_arrangement = ''
-            for c in pattern:
-                if c == '?':
-                    if bits[0] == '1':
-                        test_arrangement += '#'
-                    else:
-                        test_arrangement += '.'
-                    bits = bits[1:]
-                else:
-                    test_arrangement += c
-            chunks = [len(chunk) for chunk in test_arrangement.split('.') if len(chunk) > 0]
-            if chunks == groups:
-                # print(chunks)
-                count += 1
-
-    return count
-
-
-def pre_process(pattern, groups):
-    reduced_pattern = pattern
-
-    required = 0
-    target = groups[0]
-    for token in reduced_pattern:
-        if token == '#':
-            required += 1
-
-        if required > 0:
-            pass
-
-    return pattern
-
-
-def compatible_dot(candidate, required):
-    i = 0
-    while i < len(candidate) and i < len(groups):
-        if candidate[i] < required[i]:
-            return False
-        i += 1
-
-    return True
-
-
-def compatible_hash(candidate, required):
-    i = 0
-    while i < len(candidate) and i < len(groups):
-        if candidate[i] > required[i]:
-            return False
-        i += 1
-
-    return True
-
-
-def pre_process_bad(pattern, groups):
-    reduced_pattern = pattern
-
-    question_indices = []
-    for i, token in enumerate(pattern):
-        if token == '?':
-            question_indices.append(i)
-
-    # Try putting an # in the next ? and see if we invalidate any of the groups
-    for index in question_indices:
-        x = list(reduced_pattern)
-
-        x[index] = '#'
-        test = ''.join(x)
-        chunks = [len(chunk) for chunk in re.split('[\?\.]',test) if len(chunk) > 0]
-        if not compatible_hash(chunks, groups):
-            x[index] = '.'
-            reduced_pattern = ''.join(x)
-        else:
-            # Try putting an . in the next ? and see if we invalidate any of the groups
-            x[index] = '.'
-            test = ''.join(x)
-            chunks = [len(chunk) for chunk in re.split('[\?\.]',test) if len(chunk) > 0]
-            if not compatible_dot(chunks, groups):
-                x[index] = '#'
-                reduced_pattern = ''.join(x)
-
-
-
-
-    # There's something we can do to compare these possible 'chunks' to the actual 'groups'
-    # chunks = [len(chunk) for chunk in reduced_pattern.split('.') if len(chunk) > 0]
-    # chunks = [len(chunk) for chunk in re.split('[\?\.]', reduced_pattern) if len(chunk) > 0]
-    # print(chunks)
-
-    # Eliminate impossible spots
-
-
-    # index = 0
-    # run = ''
-    # next_group = groups[0]
-    # for token in pattern:
-    #     if token == '.':
-    #         reduced_pattern += '.'
-    #         if len(run) > 0:
-    #             next_group = groups[index]
-    #             run = ''
-    #             index += 1
-    #     else:
-    #         run += token
-
-
-
-
-    return reduced_pattern
-
-
-unfold = 1
-
-# total = 0
-# file = open('day12-snippet.dat', 'r')
-# for line in file.readlines():
-#     line = line.strip()
-
-#     if line == '':
-#         break
-
-#     parts = line.split()
-#     pattern = parts[0]
-#     if (unfold > 1):
-#          pattern += '?'
-#          pattern *= 5
-#          pattern = pattern[:-1]
-
-#     original = [int(x) for x in parts[1].split(',')]
-#     groups = []
-#     for i in range(unfold):
-#         groups.extend(original)
-
-#     # print(pattern)
-#     # print(groups)
-
-#     total += count_arrangements(pattern, groups)
-
-# print('Part 1: ' + str(total))
-
-def compatible(candidate, groups):
-    start = 0
-    for group in groups:
-        hashes = ''
-        for i in range(start, len(candidate)):
-            if candidate[i] == '.':
-                if len(hashes) > 0:
-                    hashes = ''
-                    start = 1
-                    break
-            elif candidate[i] == '#':
-                hashes += candidate[i]
-
-            if len(hashes) > group:
-                return False
-
-    return True
-
-
-def analyze_pattern(pattern, groups):
-    reduced = list(pattern)
-
-    for i, token in enumerate(pattern):
-        if token == '?':
-            reduced[i] = '#'
-            if not compatible(reduced, groups):
-                reduced[i] = '.'
-                if not compatible(reduced, groups):
-                    reduced[i] = '?'
-
-    print('Original: ' + pattern + ' has ' + str(2 ** pattern.count('?')) + ' possibilities')
-    print('Reduced:  ' + ''.join(reduced) + ' has ' + str(2 ** ''.join(reduced).count('?')) + ' possibilities')
-
-
-# analyze_pattern('?#?#?#?#?#?#?#?', [1, 3, 1, 6])
-
-
-# ---------------------------------------
-
-
 def count_patterns(pattern, groups, start_pattern_index, start_group_index):
+    global cache, cache_hits, line_number
+
     simplified = '.'.join([y for y in pattern[start_pattern_index:].split('.') if len(y) > 0])
-    params = simplified + ''.join([str(size) for size in groups[start_group_index:]])
+    params = pattern[start_pattern_index:] + '|'.join([str(size) for size in groups[start_group_index:]])
     # print(params)
+    # if params == '#??.?#?????????1111':
+    #     print('culprit at line: ' + str(line_number))
+
     if params in cache:
-        # print('CACHE HIT')
+        # if line_number == 490:
+        #     print(params + ' >>> ' + str(cache[params]))
+        cache_hits += 1
         return cache[params]
 
     group = groups[start_group_index]
@@ -272,51 +72,51 @@ def count_patterns(pattern, groups, start_pattern_index, start_group_index):
 
     return count
 
-# ---------------------------------------
-
-import time
-begin = time.time()
-lap = begin
-
-cache = {}
 
 line_number = 1
-total = 0
-unfold = 5
-file = open('day12-snippet.dat', 'r')
-for line in file.readlines():
-    parts = line.split()
+def solve(unfold):
+    global line_number
 
-    # Part 1
-    # pattern = parts[0]
-    # groups = [int(x) for x in parts[1].split(',')]
+    total = 0
 
-    # Part 2
-    pattern = parts[0]
-    if (unfold > 1):
-         pattern += '?'
-         pattern *= unfold
-         pattern = pattern[:-1]
+    file = open('day12.dat', 'r')
+    for line in file.readlines():
+        parts = line.split()
 
-    original = [int(x) for x in parts[1].split(',')]
-    groups = []
-    for i in range(unfold):
-        groups.extend(original)
+        if line.strip() == '':
+            break
 
-    count = count_patterns(pattern, groups, 0, 0)
-    total += count
+        pattern = parts[0]
+        if (unfold > 1):
+            pattern += '?'
+            pattern *= unfold
+            pattern = pattern[:-1]
 
-    print('Line: ' + str(line_number) + ' took ' + str(time.time() - lap) + ' s, count: ' + str(count))
-    lap = time.time()
-    line_number += 1
+        original = [int(x) for x in parts[1].split(',')]
+        groups = []
+        for _ in range(unfold):
+            groups.extend(original)
 
-duration = time.time() - begin
-print('Part 1:   ' + str(total)) # 6512849116431 - too low
-print(str(duration) + " seconds")
+        count = count_patterns(pattern, groups, 0, 0)
+        total += count
 
-# Original Algorithm
-# Part 1:   7191
-# 2.9085021018981934 seconds
-# Updated Algorithm
-# Part 1:   7191
-# 0.0430750846862793 seconds
+        # if line_number == 490:
+        #     print('Line: ' + str(line_number) + ': ' + str(count))
+        line_number += 1
+
+    return total
+
+
+import time
+
+cache = {}
+cache_hits = 0
+
+print('Part 1:   ' + str(solve(1)))
+begin = time.time()
+print('Part 2:   ' + str(solve(5)))
+# 6512849116431 - too low,
+# 6512849164175 - not right
+# 6512849198636
+print(str(time.time() - begin) + " seconds")
+print('Cache hits: ' + str(cache_hits))
