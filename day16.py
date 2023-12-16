@@ -10,7 +10,6 @@ DIRECTION = 2
 VISITED = '#'
 
 grid = []
-visited = []
 
 def load_data(file_name):
     file = open(file_name, 'r')
@@ -18,12 +17,15 @@ def load_data(file_name):
     for line in lines:
         line = line.strip()
         grid.append(list(line))
-        visited.append(list('.' * len(line)))
 
 
 def track_beams(x, y, direction):
     beams = [[y, x, direction]]
     tiles = set()
+
+    visited = []
+    for row in grid:
+        visited.append(list('.' * len(row)))
 
     while len(beams) > 0:
         beam = beams.pop()
@@ -123,14 +125,23 @@ def track_beams(x, y, direction):
                 break
             tiles.add(vector)
 
+    energized = 0
+    for row in visited:
+        energized += row.count('#')
+
+    return energized
+
 
 load_data('day16.dat')
 
-track_beams(-1, 0, RIGHT)
+print('Part 1: '  + str(track_beams(-1, 0, RIGHT)))
 
-total = 0
-for row in visited:
-    total += row.count('#')
+max_energized = 0
+for i in range(len(grid)):
+    max_energized = max(max_energized, \
+                        track_beams(-1, i, RIGHT), \
+                        track_beams(len(grid), i, LEFT), \
+                        track_beams(i, -1, DOWN), \
+                        track_beams(i, len(grid), UP))
 
-print('Part 1: '  + str(total))
-print('Part 2: '  + str(0))
+print('Part 2: '  + str(max_energized))
