@@ -202,9 +202,17 @@ def analyze_pattern(pattern, groups):
 # analyze_pattern('?#?#?#?#?#?#?#?', [1, 3, 1, 6])
 
 
+# ---------------------------------------
 
 
 def count_patterns(pattern, groups, start_pattern_index, start_group_index):
+    simplified = '.'.join([y for y in pattern[start_pattern_index:].split('.') if len(y) > 0])
+    params = simplified + ''.join([str(size) for size in groups[start_group_index:]])
+    # print(params)
+    if params in cache:
+        # print('CACHE HIT')
+        return cache[params]
+
     group = groups[start_group_index]
 
     count = 0
@@ -260,39 +268,50 @@ def count_patterns(pattern, groups, start_pattern_index, start_group_index):
                 updated = pattern[:start].replace('?', '.') + ('#' * group) + '.' + pattern[start + group + 1:]
                 count += count_patterns(updated, groups, i + 2, start_group_index + 1)
 
+    cache[params] = count
+
     return count
 
-
-# print(count_patterns('?#?#?#?#?#?#?#?', [1, 3, 1, 6], 0, 0))
-# print(count_patterns('?###????????', [3, 2, 1], 0, 0))
-# print(count_patterns('.??..??...?##.', [1,1,3], 0, 0))
-# print(count_patterns('??#??????#???.?', [4,3], 0, 0))
-
-# print(count_patterns('????????#????????.', [1,1,2,1,3], 0, 0))
-# print(count_arrangements('????????#????????.', [1,1,2,1,3]))
-
-# print(count_patterns('#????###???????#?', [3,3,1,4], 0, 0))
-# print(count_arrangements('#????###???????#?', [3,3,1,4]))
-
-# print(count_patterns('#??#?#.?.??????', [6,1,5], 0, 0))
-# print(count_arrangements('#??#?#.?.??????', [6,1,5]))
+# ---------------------------------------
 
 import time
 begin = time.time()
+lap = begin
 
+cache = {}
+
+line_number = 1
 total = 0
-file = open('day12.dat', 'r')
+unfold = 5
+file = open('day12-snippet.dat', 'r')
 for line in file.readlines():
     parts = line.split()
+
+    # Part 1
+    # pattern = parts[0]
+    # groups = [int(x) for x in parts[1].split(',')]
+
+    # Part 2
     pattern = parts[0]
-    groups = [int(x) for x in parts[1].split(',')]
+    if (unfold > 1):
+         pattern += '?'
+         pattern *= unfold
+         pattern = pattern[:-1]
+
+    original = [int(x) for x in parts[1].split(',')]
+    groups = []
+    for i in range(unfold):
+        groups.extend(original)
 
     count = count_patterns(pattern, groups, 0, 0)
-    # count = count_arrangements(pattern, groups)
     total += count
 
+    print('Line: ' + str(line_number) + ' took ' + str(time.time() - lap) + ' s, count: ' + str(count))
+    lap = time.time()
+    line_number += 1
+
 duration = time.time() - begin
-print('Part 1:   ' + str(total))
+print('Part 1:   ' + str(total)) # 6512849116431 - too low
 print(str(duration) + " seconds")
 
 # Original Algorithm
