@@ -13,7 +13,7 @@ paths = []
 
 def find_paths(x, y, direction, straight_count, sum, visited, path):
     # Go straight, if allowed
-    if straight_count < 3:
+    if straight_count < 2:
         move(x, y, direction, straight_count + 1, sum, visited, path.copy()) # visited.copy()?
 
     # Turn left
@@ -48,11 +48,16 @@ def move(x, y, direction, straight_count, sum, visited, path):
     loss = grid[y][x]
     sum += loss
 
+    # TODO: if sum > best path then stop
+
+    # if x == 9 and y == 2:
+    #     print('breakpoint')
+
     point = (x, y)
     if point not in visited:
         visited[point] = sum
         # visited.add(point)
-    elif visited[point] <= sum:
+    elif visited[point] < sum:
         return
     else:
         visited[point] = sum
@@ -71,9 +76,9 @@ visited = set()
 visited = {}
 find_paths(0, 0, RIGHT, 0, 0, visited, [])
 # find_paths(0, 0, DOWN, 0, 0, visited, [])
-print(path_losses)
+# print(path_losses)
 # for path in paths:
 #     print(path)
-for point in paths[28]:
-    print(point)
+# for point in paths[len(paths)-1]:
+#     print(point)
 print('Part 1: '  + str(min(path_losses)))
