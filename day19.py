@@ -58,15 +58,23 @@ class Rule:
 
 
 class Unit:
-    def __init__(self, line):
-        # Line format: {x=787,m=2655,a=1222,s=2876}
-        parts = [int(kvp.split('=')[1]) for kvp in line[1:-1].split(',')]
+    def __init__(self, x, m, a, s):
+        self.x = x
+        self.m = m
+        self.a = a
+        self.s = s
+        self.total = x + m + a + s
 
-        self.x = parts[0]
-        self.m = parts[1]
-        self.a = parts[2]
-        self.s = parts[3]
-        self.total = sum(parts)
+
+def accepted(unit):
+    pid = 'in'
+    while True:
+        processor = processors[pid]
+        pid = processor.process(unit)
+        if pid == 'A':
+            return True
+        elif pid == 'R':
+            return False
 
 
 def load_data(file_name):
@@ -82,7 +90,8 @@ def load_data(file_name):
             continue
 
         if blank_found:
-            units.append(Unit(line))
+            parts = [int(kvp.split('=')[1]) for kvp in line[1:-1].split(',')]
+            units.append(Unit(parts[0], parts[1], parts[2], parts[3]))
         else:
             curly = line.index('{')
             processors[line[:curly]] = Processor(line[curly:])
@@ -108,3 +117,28 @@ for unit in units:
 
 
 print('Part 1: ' + str(total))
+
+for x in range(1, 4001):
+    unit = Unit(x, 0, 0, 0)
+    if accepted(unit):
+        break
+
+for m in range(1, 4001):
+    unit = Unit(0, m, 0, 0)
+    if accepted(unit):
+        break
+
+for a in range(1, 4001):
+    unit = Unit(0, 0, a, 0)
+    if accepted(unit):
+        break
+
+for s in range(1, 4001):
+    unit = Unit(0, 0, 0, s)
+    if accepted(unit):
+        break
+
+print(x) # Exists
+print(m) # Exists
+print(a) # Exists
+print(s) # Does NOT exist
