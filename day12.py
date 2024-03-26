@@ -14,7 +14,7 @@ def count_patterns(pattern, groups, start_pattern_index, start_group_index):
 
     i = start_pattern_index
     # Chew through any leading '.' characters
-    while i < len(pattern) and  pattern[i] == '.':
+    while i < len(pattern) and pattern[i] == '.':
         i += 1
 
     # Limit of range is location of the next '#' or end of pattern
